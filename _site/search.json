@@ -1,0 +1,401 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Research",
+    "section": "",
+    "text": "Athletes in training can go through various stages"
+  },
+  {
+    "objectID": "index.html#motivation",
+    "href": "index.html#motivation",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Motivation",
+    "text": "Motivation\n\nSports teams work with athletes for relatively short seasons.\nAthletes can get improving, be in homeostasis or overtrained.\nThese states are not observed but an observable index of athleticism (maximal vertical jump) is observed."
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this blog"
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "index.html#context",
+    "href": "index.html#context",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Context",
+    "text": "Context\n\nAthletes in teams train to improve or maintain their fitness.\nAthletes go through various stages of training called macro meso and micro cycles.\nAthletes have different metabolic rates, heteregenous muscle and body composition.\nSame objective training input can lead to different results.\nAthletes have training history that is different from the amateur population.\nThere is a degree of generalizibility in training but many confounding variables."
+  },
+  {
+    "objectID": "index.html#notation",
+    "href": "index.html#notation",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Notation",
+    "text": "Notation\n\n\\(Y_{it}\\) Athlete i at week t.\n\\(P(Y_{it} \\mid X_{i(t-1)})\\sim N(\\mu_{i,t},\\sigma)\\)\nWe can apply a straightforward regression model here by modeling \\(\\mu_{it}\\)"
+  },
+  {
+    "objectID": "index.html#hidden-markov-models",
+    "href": "index.html#hidden-markov-models",
+    "title": "Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Hidden Markov Models",
+    "text": "Hidden Markov Models"
+  },
+  {
+    "objectID": "index.html#how-it-relates-to-the-context",
+    "href": "index.html#how-it-relates-to-the-context",
+    "title": "Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "How it relates to the context",
+    "text": "How it relates to the context"
+  },
+  {
+    "objectID": "index.html#motivation-1",
+    "href": "index.html#motivation-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Motivation",
+    "text": "Motivation\n\nSports teams work with athletes for relatively short seasons.\nAthletes can get improving, be in homeostasis or overtrained.\nThese states are not observed but an observable index of athleticism (maximal vertical jump) is observed."
+  },
+  {
+    "objectID": "index.html#motivation-2",
+    "href": "index.html#motivation-2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Motivation",
+    "text": "Motivation\n\nThe goal is to let the coaches know when more/less training is appropriate and come up with a warning system in case more workout creates injuries. To this end we propose Mixed Hidden Markov Models. This slide set is created to discuss forward and backward algorithm in order to predict the state the athlete is in as well as her level of athleticism."
+  },
+  {
+    "objectID": "index.html#notation-1",
+    "href": "index.html#notation-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Notation",
+    "text": "Notation\n\nN: Number of individuals, will be suppressed from probability notation since individuals are assumed to be independent given parameters. It will be reintroduced in the R code.\nM: the number of hidden states.\nT: the number of discrete time indices."
+  },
+  {
+    "objectID": "index.html#notation-2",
+    "href": "index.html#notation-2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Notation",
+    "text": "Notation\n\n\\(P(S_{t}=j|S_{t-1}=m )\\): probability of the state becoming \\(j\\) given that the previous state is assumed to be \\(m\\) .\nAssume time homogeneity. Therefore\n\n\\(P(S_{t}=j|S_{t-1}=m ) \\forall t\\)\n\nThis means we can represent all possible transitions between hidden states across all T with a M by M matrix. In R script this will be the Gamma object.\n\\(\\Gamma_{M \\times M}\\) conditional probability matrix."
+  },
+  {
+    "objectID": "index.html#notation-3",
+    "href": "index.html#notation-3",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Notation",
+    "text": "Notation\n\nWe can represent \\(M \\times M\\) conditional probability matrix \\(\\Gamma_{M,M}\\).\n\n\\[\\begin{equation}\n\\begin{pmatrix}\ns_{11} & s_{12} & \\cdots & s_{1M}\\\\\ns_{21} & s_{22} & \\cdots & s_{2M}\\\\\n\\vdots & \\vdots & \\ddots & \\vdots\\\\\ns_{M1} & s_{M2} & \\cdots & s_{MM}\n\\end{pmatrix}\n\\end{equation}\\]\n\\[ \\sum_{j=1}^{M}  P(S_{t}=j |S_{t-1}=m)=1 \\]"
+  },
+  {
+    "objectID": "index.html#order-1-markov-chain",
+    "href": "index.html#order-1-markov-chain",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Order 1 Markov Chain",
+    "text": "Order 1 Markov Chain\n\nAt time \\(t\\) given the previous state at time \\(t-1\\), the previous history of the hidden states before \\(t-1\\) do not matter.\n\n\\[  P(S_{t}=j |S_{t-1}=m)=P(S_{t}=j |S_{t-1}=m,S_{1},\\ldots,S_{t-2}) \\]"
+  },
+  {
+    "objectID": "index.html#notation-4",
+    "href": "index.html#notation-4",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Notation",
+    "text": "Notation\n\n\\(P(Y_{t} | S_{t}=j)\\) : probability/density of \\(Y_{t}\\) given the hidden state is \\(j\\) at time index \\(t\\).\nGiven the value of \\(S_{t}\\), \\(Y_{t}\\) is conditionally independent of previous states and observations.\n\n\\[P(Y_{t} | S_{t}=j) = P(Y_{t} | S_{t}=j,S_{1:t-1},Y_{1:t-1}) \\]"
+  },
+  {
+    "objectID": "index.html#goal",
+    "href": "index.html#goal",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Goal:",
+    "text": "Goal:\n\nWe would like to obtain \\(P(S_{t}=j|Y_{1},\\ldots,Y_{t})\\)\n\nThe probability that an athlete will belong to the hidden state j in \\(t\\) given the history of observed jumps until \\(t\\).\n\nWe would like to obtain \\(P(S_{t}=j|Y_{1},\\ldots,Y_{t-1})\\)\n\nThe probability that an athlete will belong to the hidden state j in \\(t\\) given the history of observed jumps until \\(t-1\\)."
+  },
+  {
+    "objectID": "index.html#goal-1",
+    "href": "index.html#goal-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Goal:",
+    "text": "Goal:\n\nWe would like to obtain \\(P(Y_{t+1},\\ldots,Y_{T}|S_{t}=j)\\)\n\nThe probability that an athlete will be observed to jump in \\(t+1\\) given the state."
+  },
+  {
+    "objectID": "index.html#goal-2",
+    "href": "index.html#goal-2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Goal:",
+    "text": "Goal:\n\nWe would like to obtain \\(P(S_{t}=j|Y_{1},\\ldots,Y_{T})\\)\n\nThe probability that an athlete will belong to the hidden state j in week \\(t\\) given the history of observed jumps until \\(T\\)."
+  },
+  {
+    "objectID": "index.html#to-achieve-these-goals-we-need",
+    "href": "index.html#to-achieve-these-goals-we-need",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "To achieve these goals we need:",
+    "text": "To achieve these goals we need:\n\n\\(\\alpha_{t}(j) = P(Y_{1},\\ldots,Y_{t},S_{t}=j)\\)\nFiltering \\(\\alpha_{t}^{'}(j) = P(S_{t}=j \\mid Y_{1},\\ldots,Y_{t})\\)\n\\(\\beta_{t}(j) = P(Y_{t+1},\\ldots,Y_{T} \\mid S_{t}=j)\\)\nSmoothing \\(\\gamma_{t}(j)=P(S_{t}=j \\mid Y_{1},\\ldots,Y_{T})\\)"
+  },
+  {
+    "objectID": "index.html#deriving-py_1ldotsy_ts_tj-t1",
+    "href": "index.html#deriving-py_1ldotsy_ts_tj-t1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), t=1\\)",
+    "text": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), t=1\\)\n\nAssume the prior probabilities, \\(\\delta\\), a vector of length M for \\(S_{t}\\). \\(\\delta=\\{P(S_1=1),\\ldots,P(S_{1}=M)\\}\\).\n\nRecall that since we assume time homogeneity \\(t\\) index is not necessary here but makes explanation easier later.\n\nAssume \\(P(Y_{t}|S_{t})\\) with known parameters.\nAt t = 1 \\(P(y_{1},S_{1}=j)=P(y_{1}|S_{1}=j)\\times P(S_{1}=j)=\\alpha_{1}(j)\\)\nHow about \\(\\alpha_{t}(j)\\) when \\(t&gt;1\\) ? Now we have to think about transitions between states."
+  },
+  {
+    "objectID": "index.html#deriving-py_1ldotsy_ts_tj-t1-1",
+    "href": "index.html#deriving-py_1ldotsy_ts_tj-t1-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), t>1\\)",
+    "text": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), t&gt;1\\)\n\nThe formulation is: \\(\\alpha_{t}(j)=\\sum_{k=1}^{M}  P(Y_{t}|S_{t}=j)\\times   P(S_{t}=j|s_{t-1}=k) \\times \\alpha_{t-1}(k)\\)\nThis calculation for \\(\\alpha_{t}(j)\\) is called the forward calculation and saves on computation (more on this later).\nWe need to understand each component and why it works the way it does."
+  },
+  {
+    "objectID": "index.html#deriving-py_1ldotsy_ts_tj-t2",
+    "href": "index.html#deriving-py_1ldotsy_ts_tj-t2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), t=2\\)",
+    "text": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), t=2\\)\n\nAssume t=2. We are trying to evaluate \\(P(y_{2},y_{1},S_{2}=j)=\\alpha_{2}(j)\\)\nThe formulation is: \\[\\begin{equation} \\alpha_{2}(j)=\\sum_{k=1}^{M} P(y_{2}|s_{2}=j)\\times P(s_{2}=j|s_{1}=k) \\times \\alpha_{1}(k) \\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#deriving-alpha_2jpy_1y_2s_2j-t2",
+    "href": "index.html#deriving-alpha_2jpy_1y_2s_2j-t2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Deriving \\(\\alpha_{2}(j)=P(y_{1},y_{2},s_{2}=j), t=2\\)",
+    "text": "Deriving \\(\\alpha_{2}(j)=P(y_{1},y_{2},s_{2}=j), t=2\\)\n\nThis is equivalent to\n\n\\[\\begin{equation} \\sum_{k=1}^{M} P(y_{1},y_{2},s_{2}=j,s_{1}=k)\n\\end{equation}\\]\n\nApplying the chain rule \\[\\begin{equation} \\sum_{k=1}^{M} P(Y_{2}|Y_{1},S_{2}=j,S_{1}=k) \\times P(S_{2}=j|S_{1}=k,Y_{1})\\times P(Y_{1},S_{1}=k) \\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#deriving-alpha_2jpy_1y_2s_2j-t2-1",
+    "href": "index.html#deriving-alpha_2jpy_1y_2s_2j-t2-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Deriving \\(\\alpha_{2}(j)=P(Y_{1},Y_{2},S_{2}=j), t=2\\)",
+    "text": "Deriving \\(\\alpha_{2}(j)=P(Y_{1},Y_{2},S_{2}=j), t=2\\)\n\nNote the conditional independence and markov property.\n\n\\[\\begin{equation}\n\\begin{aligned}\nP(Y_{2}|Y_{1},S_{2}=j,S_{1}=k)= & P(Y_{2}|S_{2}=j),\\\\ P(S_{2}=j|S_{1}=k,Y_{1})= & P(S_{2}=j|S_{1}=k)\n\\end{aligned}\n\\end{equation}\\]\n\nWhich leads to\n\n\\[\\begin{equation} \\sum_{k=1}^{M} P(Y_{2}|S_{2}=j) \\times P(S_{2}=j|S_{1}=k)\\times \\alpha_{1}(k) \\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#deriving-py_1ldotsy_ts_tj-forall-t1",
+    "href": "index.html#deriving-py_1ldotsy_ts_tj-forall-t1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), \\forall t>1\\)",
+    "text": "Deriving \\(P(Y_{1},\\ldots,Y_{t},S_{t}=j), \\forall t&gt;1\\)\n\\[\\begin{equation} \\alpha_{t}(j)= \\sum_{k=1}^{M} P(Y_{t}|S_{t}=j) \\times P(S_{t}=j|S_{t-1}=k)\\times \\alpha_{t-1}(k) \\end{equation}\\]\n\nWe will first simulate the calculation of \\(\\alpha\\) in R which is to be used in calculating \\(P(S_{t}=j|Y_{1:t})\\)\nNote the normalization of \\(\\alpha\\) in the code which makes it \\(P(S_{t}=j|Y_{1:t})\\)"
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions",
+    "href": "index.html#simulating-hidden-states-and-emissions",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nLibraries and some constants\nM=3 hidden states,\nT = 20 discrete time periods and\nN= 15 “individuals”. These are set as conditionally independent."
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-1",
+    "href": "index.html#simulating-hidden-states-and-emissions-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nlibrary(dqrng)\nlibrary(tidyr)\nlibrary(dplyr)\n\nN_div_M= 5\nM=3\nN=N_div_M*M\nT=20"
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-2",
+    "href": "index.html#simulating-hidden-states-and-emissions-2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nSame starting value for N individuals at \\(t=1\\) in Y matrix\nConstant standard deviation \\(\\sigma = 1\\)\n\\(\\delta={[P(S_{1}=1),P(S_{1}=2),P(S_{1}=3)]}=\\left(\\frac{1}{3},\\frac{1}{3},\\frac{1}{3}\\right)\\)\n\\(\\Gamma\\) is the conditional transition probability matrix. Rows add up to 1.\n\\(\\Gamma[j,k]=P(S_{t}=k|S_{t-1}=j)\\)\nOnce again the \\(t\\) index is not necessary here since we assume a time homogeneous transition matrix."
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-3",
+    "href": "index.html#simulating-hidden-states-and-emissions-3",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nsigma=1\n#Y will contain panel data\nY=matrix(nrow=N,ncol=T)\n\n#mu creates the mean of epsilon.\ndelta &lt;- c(1/3,1/3,1/3)\n#Transition matrix\nGamma &lt;- matrix(c(\n  0.7,0.2,0.1,\n  0.3,0.5,0.2,\n  0.1,0.4,0.5),\n  3,3,byrow=TRUE)"
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-4",
+    "href": "index.html#simulating-hidden-states-and-emissions-4",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nSetup an array labelled state that has 2 dimensions N*T elements in first dimension and 3 for the second dimension.\nsample randomly N elements between 1:M and insert them into the first N elements of state object’s first dimension and first element of the second dimension. Prior probability \\(\\delta\\).\nCorrespondingly, insert the value 1 for discrete time unit second element of dimension 2.\nCorrespondingly, 1:N for the athletes for the third element of dimension 2."
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-5",
+    "href": "index.html#simulating-hidden-states-and-emissions-5",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\n# Column 1 lists the sampled state of N individuals.\n# Column 2 is time index.\n# Column 3 is the id of individuals.\nstate=array(dim=c(N*T,3))\nstate[1:N,1]=sample(c(1:M),N,prob=delta,replace=TRUE)\nstate[1:N,2]=1\nstate[1:N,3]=c(1:N)"
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-6",
+    "href": "index.html#simulating-hidden-states-and-emissions-6",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nWe populate the rest of the state array using the Gamma object. Note how at \\(t=2\\) of the loop the sample object uses the row indices from \\(t=1\\) which in turn is used as the row index of Gamma. Double loops over i and t where.\nt is the outer loop populating 2nd element of second dimension of state array, indexing time.\ni is the inner loop populating 3rd element of second dimension of state array, indexing individuals."
+  },
+  {
+    "objectID": "index.html#simulating-hidden-states-and-emissions-7",
+    "href": "index.html#simulating-hidden-states-and-emissions-7",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating Hidden States and Emissions:",
+    "text": "Simulating Hidden States and Emissions:\n\nfor(t in 2:(T)){\n  for(i in 1:N)\n  {\nstate[(i+(t-1)*N),1]=sample(replace=TRUE,c(1:M),1,prob=Gamma[state[i+(t-2)*N],])\n\nstate[(i+(t-1)*N),2]=t  \nstate[(i+(t-1)*N),3]=i\n\n  }\n  }"
+  },
+  {
+    "objectID": "index.html#establishing-constant-means",
+    "href": "index.html#establishing-constant-means",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Establishing constant means:",
+    "text": "Establishing constant means:\n\nFor each of the M hidden states we have a constant mean.\nBased on the N*T simulated hidden states we establish the mean.\n\n\nmeans &lt;- c(-1,0,1)\n\n#mu creates the mean for epsilon.\nmu &lt;- (state[,1] == 1)*means[1] +(state[,1] == 2)*means[2] +(state[,1] == 3)*means[3]"
+  },
+  {
+    "objectID": "index.html#simulating-epsilon_it-and-y_it",
+    "href": "index.html#simulating-epsilon_it-and-y_it",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Simulating \\(\\epsilon_{i,t}\\) and \\(Y_{i,t}\\)",
+    "text": "Simulating \\(\\epsilon_{i,t}\\) and \\(Y_{i,t}\\)\n\n\\(\\epsilon_{i,t}\\) is simulated assuming normality with means changing according to state j.\\(\\epsilon_{i,t}=N(\\mu_{S_{i,t}},\\sigma)\\)\n\\(Y_{i,t}\\) is equated to \\(\\epsilon_{i,t}\\) in this oversimplified example. Therefore \\(P(Y_{i,t}|S_{t}=j) \\sim N(\\mu_{j},\\sigma)\\)\nNote that \\(Y\\) represents panel data with dimensions N (15) T (20).\n\n\nfor(t in 1:T){\n  epsilon=rnorm(n=N,mean=mu[(1+(t-1)*N):( (t-1)*N+N )],sigma)\n\n  Y[,t]=epsilon\n}"
+  },
+  {
+    "objectID": "index.html#setting-emissions-and-panel-data",
+    "href": "index.html#setting-emissions-and-panel-data",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Setting Emissions and Panel Data",
+    "text": "Setting Emissions and Panel Data\n\nConvert matrix to data.frame, set the athlete ID to panel data. Each row is an athlete, each column is a week.\nSet 3 dimensional emission array elements: \\(P(Y_{it}|S_{t}=j)\\)\n\n\nY &lt;- as.data.frame(Y)\n\nY$Athlete &lt;- 1:nrow(Y)\n\nB &lt;- array(dim=c(N,T,M))\nfor(t in 1:T){\n  for(i in 1:N){\n    B[i,t,] &lt;- dnorm(Y[i,t],mean=means,sd=sigma)}}"
+  },
+  {
+    "objectID": "index.html#recall-alpha-beta-gamma",
+    "href": "index.html#recall-alpha-beta-gamma",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Recall \\(\\alpha, \\beta, \\gamma\\)",
+    "text": "Recall \\(\\alpha, \\beta, \\gamma\\)\n\n\\(\\alpha_{t}(j)=P(Y_{1},\\ldots,Y_{t},S_{t}=j)\\)\n\\(\\alpha_{t}^{'}(j)=P(S_{t}=j|Y_{1},\\ldots,Y_{t})\\)\n\\(\\beta_{t}(j)=P(Y_{t+1},\\ldots,Y_{T}|S_{t}=j)\\)\n\\(\\gamma_{t}(j)=P(S_{t}=j|Y_{1},\\ldots,Y_{T})\\)"
+  },
+  {
+    "objectID": "index.html#calculating-alpha-and-alpha",
+    "href": "index.html#calculating-alpha-and-alpha",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Calculating \\(\\alpha\\) and \\(\\alpha^{'}\\)",
+    "text": "Calculating \\(\\alpha\\) and \\(\\alpha^{'}\\)\n\nalpha &lt;- array(dim=c(N,T,M))\nfor (i in 1:N){\nalpha[i,1,] &lt;- delta*B[i,1,]\nalpha[i,1,] &lt;- alpha[i,1,]/sum(alpha[i,1,])\n\nfor(t in 2:T){\n\n  for(m in 1:M){\n    alpha[i,t,m] &lt;-\n      B[i,t,m]*sum(alpha[i,t-1,]*Gamma[,m])}\n  alpha[i,t,] &lt;- alpha[i,t,]/sum(alpha[i,t,])\n}\n}"
+  },
+  {
+    "objectID": "index.html#transform-y-from-wide-to-long-format",
+    "href": "index.html#transform-y-from-wide-to-long-format",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Transform Y from Wide to Long Format",
+    "text": "Transform Y from Wide to Long Format\n\nlong &lt;- pivot_longer(\n  Y,\n  cols = -Athlete,\n  names_to = \"Week\",\n  values_to = \"Jump\"\n)\n\nlong$Week &lt;- as.numeric(gsub(\"V\",\"\",long$Week))\n\n\n-Athlete identifies the id column of wide data the rest of the columns are pivoted\nColumn ids are turned into Week (t) identifiers."
+  },
+  {
+    "objectID": "index.html#aligning-simulated-states-and-alpha",
+    "href": "index.html#aligning-simulated-states-and-alpha",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Aligning simulated states and \\(\\alpha\\)",
+    "text": "Aligning simulated states and \\(\\alpha\\)\n\nstate is ordered with the order function first by athlete than by week to match with the format of \\(long\\).\n\n\nstate &lt;- state[order(state[, 3], state[, 2]), ]\nstate=as.data.frame(state)\nnames(state)=c(\"state\",\"Week\",\"Athlete\")\nlong$state=state$state"
+  },
+  {
+    "objectID": "index.html#aligning-simulated-states-and-alpha-1",
+    "href": "index.html#aligning-simulated-states-and-alpha-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Aligning simulated states and \\(\\alpha\\)",
+    "text": "Aligning simulated states and \\(\\alpha\\)\n\nalpha_state object identifies the state with the maximum probability of \\(P(S_{t}=j|y_{1},\\ldots,y_{t})\\) from \\(\\alpha^{'}\\)\npredicted_state converts it into the long form we compare these values to the simulated values in long object.\n\n\nalpha_state &lt;- apply(alpha, c(1, 2), which.max)\npredicted_state=array(dim=c(T*N))\n\nfor(t in 1:T){for(i in 1:N){\npredicted_state[t+(i-1)*T]=alpha_state[i,t]}}\nsum(long$state==predicted_state)/length(predicted_state)\n\n[1] 0.6266667"
+  },
+  {
+    "objectID": "index.html#beta_tjpy_t1ldotsy_t-mid-s_tj",
+    "href": "index.html#beta_tjpy_t1ldotsy_t-mid-s_tj",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "\\(\\beta_{t}(j)=P(Y_{t+1},\\ldots,Y_{T} \\mid S_{t}=j)\\)",
+    "text": "\\(\\beta_{t}(j)=P(Y_{t+1},\\ldots,Y_{T} \\mid S_{t}=j)\\)\n\\[\\begin{equation}\n\\begin{aligned}\n\n\\beta_{t}(j)= & \\sum_{m=1}^{M} P(Y_{t+1},\\ldots,Y_{T},S_{t+1}=m \\mid S_{t}=j) \\\\\n\n= & \\sum_{m=1}^{M} P(S_{t+1}=m \\mid S_{t}=j) \\times P(Y_{t+1:T}\\mid S_{t+1}=m,S_{t}=j) \\\\\nsince\\\\\n= & \\sum_{m=1}^{M} \\frac{P(S_{t+1}=m,S_{t}=j)}{P(S_{t}=j)}\\times \\frac{P(Y_{t+1:T,S_{t+1}=m,S_{t}=j})}{P(S_{t+1}=m,S_{t}=j)}\n\\end{aligned}\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#beta_tjpy_t1ldotsy_t-mid-s_tj-1",
+    "href": "index.html#beta_tjpy_t1ldotsy_t-mid-s_tj-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "\\(\\beta_{t}(j)=P(Y_{t+1},\\ldots,Y_{T} \\mid S_{t}=j)\\)",
+    "text": "\\(\\beta_{t}(j)=P(Y_{t+1},\\ldots,Y_{T} \\mid S_{t}=j)\\)\n\\[\\begin{equation}\n\\begin{aligned}\n\n& \\sum_{m=1}^{M} P(S_{t+1}=m \\mid S_{t}=j)  P(Y_{t+1:T}\\mid S_{t+1}=m,S_{t}=j) \\\\\n& note \\\\\n& P(Y_{((t+1):T)}\\mid S_{t+1}=m,S_{t}=j) = \\\\\n\n& P(Y_{(t+1)}\\mid S_{t+1}=m) P(Y_{t+2:T}\\mid S_{t+1}=m) \\\\\n\n& \\therefore \\\\\n\n& \\sum_{m=1}^{M} P(S_{t+1}=m \\mid S_{t} = j) P(Y_{t+1} \\mid S_{t+1}=m) P(Y_{t+2:T} \\mid S_{t+1}=m)\n\n\\end{aligned}\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#beta_tjpy_t1ldotsy_t-mid-s_tj-2",
+    "href": "index.html#beta_tjpy_t1ldotsy_t-mid-s_tj-2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "\\(\\beta_{t}(j)=P(y_{t+1},\\ldots,y_{T} \\mid S_{t}=j)\\)",
+    "text": "\\(\\beta_{t}(j)=P(y_{t+1},\\ldots,y_{T} \\mid S_{t}=j)\\)\n\\[\\begin{equation}\n\\begin{aligned}\n& \\sum_{m=1}^{M} P(S_{t+1}=m \\mid S_{t} = j) P(Y_{t+1} \\mid S_{t+1}=m) P(Y_{t+2:T} \\mid S_{t+1}=m) \\\\\n\n& \\sum_{m=1}^{M} (transition)(emission)(\\beta_{t+1}(m))\\\\\n\n& \\beta_{T}(j)=1\n\n\\end{aligned}\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#scripting-beta_itj",
+    "href": "index.html#scripting-beta_itj",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Scripting \\(\\beta_{i,t}(j)\\)",
+    "text": "Scripting \\(\\beta_{i,t}(j)\\)\n\n3 objects and 3 indices.\ni=\\(1,\\ldots,N\\), \\(t=1,\\ldots,T\\), \\(j=1,\\ldots,M\\)\ni=\\(1,\\ldots,15\\), \\(t=1,\\ldots,20\\), \\(j=1,\\ldots,3\\)\nset the 3 dimensional array \\(\\beta\\) and set for all individuals \\(\\beta_{T}(j)=1\\). dim(beta)= (15,20,3)\nGamma is transition probability matrix and is time homogeneous and is constant for i. dim(Gamma)=(3,3)\n\nB is the emission matrix and contains the densities of \\(y_{i,t} \\mid S_{t}=m\\) dim(B) = (15,20,3)"
+  },
+  {
+    "objectID": "index.html#scripting-beta_itj-1",
+    "href": "index.html#scripting-beta_itj-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Scripting \\(\\beta_{i,t}(j)\\)",
+    "text": "Scripting \\(\\beta_{i,t}(j)\\)\n\nbeta[i, t, j] &lt;-sum(Gamma[j, ]*B[i, t+1, ]*beta[i, t+1, ])\nGamma[j, ] = \\(P(S_{t+1}=1 \\mid S_{t}=j),P(S_{t+1}=2 \\mid S_{t}=j),P(S_{t+1}=3 \\mid S_{t}=j )\\)\nB[i, t+1, ] = \\(P(Y_{i,(t+1)} \\mid S_{t+1}=1),P(Y_{i,(t+1)} \\mid S_{t+1}=2),P(Y_{i,(t+1)} \\mid  S_{t+1}=3)\\)\nbeta[i, t+1, ] = \\(P(Y_{i,t+2:T} \\mid S_{t+1}=1),P(Y_{i,t+2:T} \\mid S_{t+1}=2),P(Y_{i,t+2:T} \\mid S_{t+1}=3)\\)\n\n\\[\\begin{equation}\n\\sum_{m=1}^{M} P(S_{t+1}=m \\mid S_{t} = j) P(Y_{t+1} \\mid S_{t+1}=m) P(Y_{t+2:T} \\mid S_{t+1}=m)\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#scripting-beta_tjpy_t1ldotsy_t-mid-s_tj",
+    "href": "index.html#scripting-beta_tjpy_t1ldotsy_t-mid-s_tj",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Scripting \\(\\beta_{t}(j)=P(y_{t+1},\\ldots,y_{T} \\mid S_{t}=j)\\)",
+    "text": "Scripting \\(\\beta_{t}(j)=P(y_{t+1},\\ldots,y_{T} \\mid S_{t}=j)\\)\n\nbeta &lt;- array(dim = c(N, T, M))\n\nfor (i in 1:N) {\n  beta[i, T, ] &lt;- 1\nfor (t in (T-1):1) {for (j in 1:M) {\n  beta[i, t, j] &lt;-sum(Gamma[j, ] *B[i, t+1, ]*\n  beta[i, t+1, ])}}}"
+  },
+  {
+    "objectID": "index.html#gamma_tjps_tj-mid-y_1t",
+    "href": "index.html#gamma_tjps_tj-mid-y_1t",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "\\(\\gamma_{t}(j)=P(S_{t}=j \\mid Y_{1:T})\\)",
+    "text": "\\(\\gamma_{t}(j)=P(S_{t}=j \\mid Y_{1:T})\\)\n\nIn the explanation below note the conditional independence property.\n\\(Y_{t+1:T} \\perp Y_{1:t} \\mid S_{t}=j\\), in other words if the state at time \\(t\\) is known, the history of Y does not provide information for the future uncertainty of Y.\n\n\\(P(Y_{t+1:T} \\mid S_{t}=j)=P(Y_{t+1:T} \\mid S_{t}=j, Y_{1:t})\\)"
+  },
+  {
+    "objectID": "index.html#gamma_tjps_tj-mid-y_1t-1",
+    "href": "index.html#gamma_tjps_tj-mid-y_1t-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "\\(\\gamma_{t}(j)=P(S_{t}=j \\mid Y_{1:T})\\)",
+    "text": "\\(\\gamma_{t}(j)=P(S_{t}=j \\mid Y_{1:T})\\)\n\\[\\begin{equation}\n\\begin{aligned}\n\n\\gamma_{t}(j) =& \\frac{\\alpha_{t}(j)\\beta_{t}(j)}{\\sum_{m=1}^{M}\\alpha_{t}(m)\\beta_{t}(m)}\\\\\n\n=& \\frac{P(Y_{1},\\ldots,Y_{t},S_{t}=j)P(y_{t+1},\\ldots,Y_{T}|S_{t}=j)}{\\sum_{m=1}^{M}\\alpha_{t}(m)\\beta_{t}(m)}\\\\\n\n=& \\frac{P(Y_{1},\\ldots,Y_{t},S_{t}=j)P(y_{t+1},\\ldots,Y_{T}|S_{t}=j,y_{1},\\ldots,Y_{t})}{\\sum_{m=1}^{M}\\alpha_{t}(m)\\beta_{t}(m)}\\\\\n\n=& \\frac{P(Y_{1},\\ldots,Y_{T},S_{t}=j)}{\\sum_{m=1}^{M}P(Y_{1},\\ldots,Y_{T},S_{t}=m)}=\\frac{P(Y_{1},\\ldots,Y_{T},S_{t}=j)}{P(Y_{1},\\ldots,Y_{T})}\n\n\\end{aligned}\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#scripting-gamma_tj",
+    "href": "index.html#scripting-gamma_tj",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Scripting \\(\\gamma_{t}(j)\\)",
+    "text": "Scripting \\(\\gamma_{t}(j)\\)\n\nNote that the \\(\\alpha\\) below is \\(\\alpha^{'}\\) because of the normalization, this does not change anything in the relationship between \\(\\alpha\\) and \\(\\beta\\) for getting \\(\\gamma\\) since the numerator ratio and the denominator ratio is going to have the same constant.\n\n\ngamma &lt;- alpha * beta\n\nfor (i in 1:N) {\n  for (t in 1:T) {\n    gamma[i,t,] &lt;-\n      gamma[i,t,] / sum(gamma[i,t,])\n  }\n}\n\ngamma_state &lt;- apply(gamma, c(1, 2), which.max)"
+  },
+  {
+    "objectID": "index.html#converting-gamma_state-to-long-format",
+    "href": "index.html#converting-gamma_state-to-long-format",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Converting gamma_state to long format",
+    "text": "Converting gamma_state to long format\n\nsmoothed_state is the long format of gamma_state\n\n\nsmoothed_state=array(dim=c(T*N))\n\nfor(t in 1:T){\n  for(i in 1:N){\n    smoothed_state[t+(i-1)*T]=gamma_state[i,t]\n  }}\n\nsum(long$state==smoothed_state)/length(smoothed_state)\n\n[1] 0.6433333"
+  },
+  {
+    "objectID": "index.html#extra-ps_tm-mid-y_1t-1",
+    "href": "index.html#extra-ps_tm-mid-y_1t-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Extra: \\(P(S_{t}=m \\mid Y_{1:t-1})\\)",
+    "text": "Extra: \\(P(S_{t}=m \\mid Y_{1:t-1})\\)\n\\[\\begin{equation}\n\\begin{aligned}\n\n& P(S_{t}=m \\mid S_{t-1}=j)=P(S_{t}=m \\mid S_{t-1}=j,Y_{1:t-1})\\\\\n\n&P(S_{t}=m \\mid Y_{1:t-1})= \\sum_{j=1}^{M}P(S_{t-1}=j\\mid Y_{1:t-1})P(S_{t}=m \\mid S_{t-1}=j,Y_{1:t-1})\\\\\n\n& \\sum_{j=1}^{M}\\alpha^{'}_{t-1}(j)P(S_{t}=m \\mid S_{t-1} = j)\n\n\\end{aligned}\n\\end{equation}\\]"
+  },
+  {
+    "objectID": "index.html#replicating-results-using-software",
+    "href": "index.html#replicating-results-using-software",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "Replicating Results Using Software",
+    "text": "Replicating Results Using Software"
+  },
+  {
+    "objectID": "index.html#hmm-goal",
+    "href": "index.html#hmm-goal",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "HMM Goal:",
+    "text": "HMM Goal:\n\nWe would like to obtain \\(P(S_{t}=j|Y_{1},\\ldots,Y_{t})\\)\n\nThe probability that an athlete will belong to the hidden state j at week \\(t\\) given the history of observed jumps from week 1 to \\(t\\).\n\nWe would like to obtain \\(P(S_{t}=j|Y_{1},\\ldots,Y_{t-1})\\)\n\nThe probability that an athlete will belong to the hidden state j in \\(t\\) given the history of observed jumps until \\(t-1\\)."
+  },
+  {
+    "objectID": "index.html#hmm-goal-1",
+    "href": "index.html#hmm-goal-1",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "HMM Goal:",
+    "text": "HMM Goal:\n\nWe would like to obtain \\(P(Y_{t+1},\\ldots,Y_{T}|S_{t}=j)\\)\n\nThe probability that an athlete will be observed to jump in \\(t+1\\) given the state."
+  },
+  {
+    "objectID": "index.html#hmm-goal-2",
+    "href": "index.html#hmm-goal-2",
+    "title": "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem",
+    "section": "HMM Goal:",
+    "text": "HMM Goal:\n\nWe would like to obtain \\(P(S_{t}=j|Y_{1},\\ldots,Y_{T})\\)\n\nThe probability that an athlete will belong to the hidden state j in week \\(t\\) given the history of observed jumps until \\(T\\).\n\n\n## Coaching Goal - Learning about \\(P(S_{t} \\mid Y_{1},\\cdots, Y_{t})\\) suggests a lower/higher work or intensity load.\n\nLearning about \\(E(Y_{t} \\mid Y_{1}\\cdots Y_{t-1})\\) enables the computation of the residual for \\(t\\) for flagging the athlete for injury prevention."
+  }
+]
