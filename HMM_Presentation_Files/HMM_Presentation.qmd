@@ -1,0 +1,630 @@
+---
+title: "Athlete Programming and Flagging via Hidden Markov Models, Small Samples, n<<p problem"
+format:
+  revealjs: 
+    toc: FALSE
+    theme: dark
+    slide-number: c/t
+    show-slide-number: all
+---
+
+## Context
+
+- Athletes in teams train to improve or maintain their fitness. 
+
+- Athletes go through various stages of training called macro meso and micro cycles.
+
+- Athletes have different metabolic rates, heteregenous muscle and body composition.  
+
+- Same objective training input can lead to different results.  
+
+- Athletes have training history that is different from the amateur population. 
+
+- There is a degree of generalizibility in training but many confounding variables.
+
+# Challenges and Context
+
+- Athletes have missing values due to game schedules and injuries.
+
+- Athletes have objective and subjective measurements whose count is large compared to MVJ measurements whose mean we are modeling.
+
+- Competitive athletes will not always let you know they have fatigue. 
+
+# Challenges and Context
+- Team is observed through 20 weeks
+
+- On mondays athletes have their maximal vertical jump (MVJ) measured. This serves as a proxy for their level of athletism. 
+
+- Given workload, intensity, density and subjective measurementss of their training 
+  - In a particular week is the athlete in a state of improvement, maintanence or overtraining?
+
+  - For an athlete is the difference between the observed and expected MVJ a negative outlier that can indicate a red flag?
+
+## Notation
+- $Y_{it}$ Athlete i at week t.
+
+- $P(Y_{it} \mid X_{i(t-1)})\sim N(\mu_{i,t},\sigma)$
+- We can apply a straightforward regression model here by modeling $\mu_{it}$
+
+## Motivation
+
+- Sports teams work with athletes for relatively short seasons.
+
+- Athletes can get improving, be in homeostasis or overtrained.
+
+- These states are not observed but an observable index of athleticism (maximal vertical jump) is observed.
+
+
+## Notation
+
+- N: Number of individuals, will be suppressed from probability notation since individuals are assumed to be independent given parameters. It will be reintroduced in the R code.  
+
+- M: the number of hidden states.
+
+- T: the number of discrete time indices.
+
+## Notation
+
+- $P(S_{t}=j|S_{t-1}=m )$: probability of the state becoming $j$ given that the previous state is assumed to be $m$ . 
+
+- Assume time homogeneity. Therefore
+
+$P(S_{t}=j|S_{t-1}=m ) \forall t$
+
+- This means we can represent all possible transitions between hidden states across all T with a M by M matrix. In R script this will be the Gamma object.
+
+- $\Gamma_{M \times M}$ conditional probability matrix.
+
+## Notation
+
+- We can represent $M \times M$ conditional probability matrix $\Gamma_{M,M}$.
+
+\begin{equation}
+\begin{pmatrix}
+s_{11} & s_{12} & \cdots & s_{1M}\\
+s_{21} & s_{22} & \cdots & s_{2M}\\
+\vdots & \vdots & \ddots & \vdots\\
+s_{M1} & s_{M2} & \cdots & s_{MM}
+\end{pmatrix}
+\end{equation}
+
+$$ \sum_{j=1}^{M}  P(S_{t}=j |S_{t-1}=m)=1 $$
+
+## Order 1 Markov Chain
+
+- At time $t$ given the previous state at time $t-1$, the previous history of the hidden states before $t-1$ do not matter.
+
+$$  P(S_{t}=j |S_{t-1}=m)=P(S_{t}=j |S_{t-1}=m,S_{1},\ldots,S_{t-2}) $$
+
+## Notation
+
+- $P(Y_{t} | S_{t}=j)$ : probability/density of $Y_{t}$ given the hidden state is $j$ at time index $t$.
+
+- Given the value of $S_{t}$, $Y_{t}$ is conditionally independent of previous states and observations.
+
+$$P(Y_{t} | S_{t}=j) = P(Y_{t} | S_{t}=j,S_{1:t-1},Y_{1:t-1}) $$
+
+## HMM Goal:
+
+- We would like to obtain $P(S_{t}=j|Y_{1},\ldots,Y_{t})$
+  - The probability that an athlete will belong to the hidden state j at week $t$ given the history of observed jumps from week 1 to $t$.
+ 
+- We would like to obtain $P(S_{t}=j|Y_{1},\ldots,Y_{t-1})$
+  - The probability that an athlete will belong to the hidden state j in $t$ given the history of observed jumps until $t-1$.
+
+## HMM Goal:
+
+- We would like to obtain $P(Y_{t+1},\ldots,Y_{T}|S_{t}=j)$
+  - The probability that an athlete will be observed to jump in  $t+1$ given the state.  
+
+
+## HMM Goal:
+
+- We would like to obtain $P(S_{t}=j|Y_{1},\ldots,Y_{T})$
+  - The probability that an athlete will belong to the hidden state j in week $t$ given the history of observed jumps until $T$.  
+
+
+ ## Coaching Goal
+- Learning about $P(S_{t} \mid Y_{1},\cdots, Y_{t})$ suggests a lower/higher work or intensity load.
+
+- Learning about $E(Y_{t} \mid Y_{1}\cdots Y_{t-1})$ enables the computation of the residual for $t$ for flagging the athlete for injury prevention.
+
+## To achieve these goals we need:
+
+- $\alpha_{t}(j) = P(Y_{1},\ldots,Y_{t},S_{t}=j)$
+
+- Filtering $\alpha_{t}^{'}(j) = P(S_{t}=j \mid Y_{1},\ldots,Y_{t})$
+
+- $\beta_{t}(j) = P(Y_{t+1},\ldots,Y_{T} \mid S_{t}=j)$
+
+- Smoothing $\gamma_{t}(j)=P(S_{t}=j \mid Y_{1},\ldots,Y_{T})$
+ 
+## Deriving $P(Y_{1},\ldots,Y_{t},S_{t}=j), t=1$
+
+- Assume the prior probabilities, $\delta$, a vector of length M for $S_{t}$. $\delta=\{P(S_1=1),\ldots,P(S_{1}=M)\}$.
+  - Recall that since we assume time homogeneity $t$ index is not necessary here but makes explanation easier later.
+
+- Assume $P(Y_{t}|S_{t})$ with known parameters.
+
+- At t = 1 $P(y_{1},S_{1}=j)=P(y_{1}|S_{1}=j)\times P(S_{1}=j)=\alpha_{1}(j)$
+
+- How about $\alpha_{t}(j)$ when $t>1$ ? Now we have to think about transitions between states.
+
+## Deriving $P(Y_{1},\ldots,Y_{t},S_{t}=j), t>1$
+
+- The formulation is: $\alpha_{t}(j)=\sum_{k=1}^{M}  P(Y_{t}|S_{t}=j)\times   P(S_{t}=j|s_{t-1}=k) \times \alpha_{t-1}(k)$
+
+- This calculation for $\alpha_{t}(j)$ is called the forward calculation and saves on computation (more on this later).
+
+- We need to understand each component and why it works the way it does.
+
+## Deriving $P(Y_{1},\ldots,Y_{t},S_{t}=j), t=2$
+
+- Assume t=2. We are trying to evaluate $P(y_{2},y_{1},S_{2}=j)=\alpha_{2}(j)$  
+
+- The formulation is:
+\begin{equation} \alpha_{2}(j)=\sum_{k=1}^{M} P(y_{2}|s_{2}=j)\times P(s_{2}=j|s_{1}=k) \times \alpha_{1}(k) \end{equation}
+
+
+## Deriving $\alpha_{2}(j)=P(y_{1},y_{2},s_{2}=j), t=2$
+
+- This is equivalent to
+
+\begin{equation} \sum_{k=1}^{M} P(y_{1},y_{2},s_{2}=j,s_{1}=k)
+\end{equation}
+
+- Applying the chain rule
+ \begin{equation} \sum_{k=1}^{M} P(Y_{2}|Y_{1},S_{2}=j,S_{1}=k) \times P(S_{2}=j|S_{1}=k,Y_{1})\times P(Y_{1},S_{1}=k) \end{equation}
+
+## Deriving $\alpha_{2}(j)=P(Y_{1},Y_{2},S_{2}=j), t=2$
+
+- Note the conditional independence and markov property.
+
+\begin{equation}
+\begin{aligned}
+P(Y_{2}|Y_{1},S_{2}=j,S_{1}=k)= & P(Y_{2}|S_{2}=j),\\ P(S_{2}=j|S_{1}=k,Y_{1})= & P(S_{2}=j|S_{1}=k)
+\end{aligned}
+\end{equation}
+
+- Which leads to
+
+\begin{equation} \sum_{k=1}^{M} P(Y_{2}|S_{2}=j) \times P(S_{2}=j|S_{1}=k)\times \alpha_{1}(k) \end{equation}
+
+## Deriving $P(Y_{1},\ldots,Y_{t},S_{t}=j), \forall t>1$
+
+\begin{equation} \alpha_{t}(j)= \sum_{k=1}^{M} P(Y_{t}|S_{t}=j) \times P(S_{t}=j|S_{t-1}=k)\times \alpha_{t-1}(k) \end{equation}
+
+- We will first simulate the calculation of $\alpha$ in R which is to be used in calculating $P(S_{t}=j|Y_{1:t})$
+
+- Note the normalization of $\alpha$ in the code which makes it $P(S_{t}=j|Y_{1:t})$
+
+## Simulating Hidden States and Emissions:
+
+- Libraries and some constants
+- M=3 hidden states,
+- T = 20 discrete time periods and
+- N= 15 "individuals". These are set as conditionally independent.
+
+## Simulating Hidden States and Emissions:
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+library(dqrng)
+library(tidyr)
+library(dplyr)
+
+N_div_M= 5
+M=3
+N=N_div_M*M
+T=20
+```
+
+## Simulating Hidden States and Emissions:
+
+- Same starting value for N individuals at $t=1$ in Y matrix
+- Constant standard deviation $\sigma = 1$
+- $\delta={[P(S_{1}=1),P(S_{1}=2),P(S_{1}=3)]}=\left(\frac{1}{3},\frac{1}{3},\frac{1}{3}\right)$
+
+- $\Gamma$ is the conditional transition probability matrix. Rows add up to 1.
+
+- $\Gamma[j,k]=P(S_{t}=k|S_{t-1}=j)$
+
+- Once again the $t$ index is not necessary here since we assume a time homogeneous transition matrix.
+
+## Simulating Hidden States and Emissions:
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+
+sigma=1
+#Y will contain panel data
+Y=matrix(nrow=N,ncol=T)
+
+#mu creates the mean of epsilon.
+delta <- c(1/3,1/3,1/3)
+#Transition matrix
+Gamma <- matrix(c(
+  0.7,0.2,0.1,
+  0.3,0.5,0.2,
+  0.1,0.4,0.5),
+  3,3,byrow=TRUE)
+
+```
+
+## Simulating Hidden States and Emissions:
+
+- Setup an array labelled state that has 2 dimensions N*T elements in first dimension and 3 for the second dimension.
+
+- sample randomly N elements between 1:M and insert them into the first N elements of state object's first dimension and first element of the second dimension. Prior probability $\delta$.
+
+- Correspondingly, insert the value 1 for discrete time unit second element of dimension 2.
+
+- Correspondingly, 1:N for the athletes for the third element of dimension 2.  
+
+## Simulating Hidden States and Emissions:
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+# Column 1 lists the sampled state of N individuals.
+# Column 2 is time index.
+# Column 3 is the id of individuals.
+state=array(dim=c(N*T,3))
+state[1:N,1]=sample(c(1:M),N,prob=delta,replace=TRUE)
+state[1:N,2]=1
+state[1:N,3]=c(1:N)
+
+```
+
+## Simulating Hidden States and Emissions:
+
+- We populate the rest of the state array using the Gamma object. Note how at $t=2$ of the loop the sample object uses the row indices from $t=1$ which in turn is used as the row index of Gamma. Double loops over i and t where.
+
+- t is the outer loop populating 2nd element of second dimension of state array, indexing time.
+
+- i is the inner loop populating 3rd element of second dimension of state array, indexing individuals.
+
+
+
+## Simulating Hidden States and Emissions:
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+for(t in 2:(T)){
+  for(i in 1:N)
+  {
+state[(i+(t-1)*N),1]=sample(replace=TRUE,c(1:M),1,prob=Gamma[state[i+(t-2)*N],])
+
+state[(i+(t-1)*N),2]=t  
+state[(i+(t-1)*N),3]=i
+
+  }
+  }
+
+```
+
+## Establishing constant means:
+
+- For each of the M hidden states we have a constant mean.
+
+- Based on the N*T simulated hidden states we establish the mean.  
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+means <- c(-1,0,1)
+
+#mu creates the mean for epsilon.
+mu <- (state[,1] == 1)*means[1] +(state[,1] == 2)*means[2] +(state[,1] == 3)*means[3]
+```
+
+## Simulating $\epsilon_{i,t}$ and $Y_{i,t}$
+
+- $\epsilon_{i,t}$ is simulated assuming normality with means changing according to state j.$\epsilon_{i,t}=N(\mu_{S_{i,t}},\sigma)$  
+
+- $Y_{i,t}$ is equated to $\epsilon_{i,t}$ in this oversimplified example. Therefore $P(Y_{i,t}|S_{t}=j) \sim N(\mu_{j},\sigma)$
+
+- Note that $Y$ represents panel data with dimensions N (15) \times T (20).  
+
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+for(t in 1:T){
+  epsilon=rnorm(n=N,mean=mu[(1+(t-1)*N):( (t-1)*N+N )],sigma)
+
+  Y[,t]=epsilon
+}
+```
+
+## Setting Emissions and Panel Data
+
+- Convert matrix to data.frame, set the athlete ID to panel data. Each row is an athlete, each column is a week.
+
+- Set 3 dimensional emission array elements: $P(Y_{it}|S_{t}=j)$
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+Y <- as.data.frame(Y)
+
+Y$Athlete <- 1:nrow(Y)
+
+B <- array(dim=c(N,T,M))
+for(t in 1:T){
+  for(i in 1:N){
+    B[i,t,] <- dnorm(Y[i,t],mean=means,sd=sigma)}}
+```
+
+## Recall $\alpha, \beta, \gamma$
+
+- $\alpha_{t}(j)=P(Y_{1},\ldots,Y_{t},S_{t}=j)$
+- $\alpha_{t}^{'}(j)=P(S_{t}=j|Y_{1},\ldots,Y_{t})$
+- $\beta_{t}(j)=P(Y_{t+1},\ldots,Y_{T}|S_{t}=j)$
+- $\gamma_{t}(j)=P(S_{t}=j|Y_{1},\ldots,Y_{T})$
+
+## Calculating $\alpha$ and $\alpha^{'}$
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+alpha <- array(dim=c(N,T,M))
+for (i in 1:N){
+alpha[i,1,] <- delta*B[i,1,]
+alpha[i,1,] <- alpha[i,1,]/sum(alpha[i,1,])
+
+for(t in 2:T){
+
+  for(m in 1:M){
+    alpha[i,t,m] <-
+      B[i,t,m]*sum(alpha[i,t-1,]*Gamma[,m])}
+  alpha[i,t,] <- alpha[i,t,]/sum(alpha[i,t,])
+}
+}
+```
+
+## Transform Y from Wide to Long Format
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+long <- pivot_longer(
+  Y,
+  cols = -Athlete,
+  names_to = "Week",
+  values_to = "Jump"
+)
+
+long$Week <- as.numeric(gsub("V","",long$Week))
+```
+
+- -Athlete identifies the id column of wide data the rest of the columns are pivoted
+
+- Column ids are turned into Week (t) identifiers.
+
+## Aligning simulated states and $\alpha$
+
+- state is ordered with the order function first by athlete than by week to match with the format of $long$.
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+state <- state[order(state[, 3], state[, 2]), ]
+state=as.data.frame(state)
+names(state)=c("state","Week","Athlete")
+long$state=state$state
+
+
+```
+
+## Aligning simulated states and $\alpha$
+
+- alpha_state object identifies the state with the maximum probability of $P(S_{t}=j|y_{1},\ldots,y_{t})$ from $\alpha^{'}$
+
+- predicted_state converts it into the long form we compare these values to the simulated values in long object.
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+
+alpha_state <- apply(alpha, c(1, 2), which.max)
+predicted_state=array(dim=c(T*N))
+
+for(t in 1:T){for(i in 1:N){
+predicted_state[t+(i-1)*T]=alpha_state[i,t]}}
+sum(long$state==predicted_state)/length(predicted_state)
+```
+
+## $\beta_{t}(j)=P(Y_{t+1},\ldots,Y_{T} \mid S_{t}=j)$
+
+\begin{equation}
+\begin{aligned}
+
+\beta_{t}(j)= & \sum_{m=1}^{M} P(Y_{t+1},\ldots,Y_{T},S_{t+1}=m \mid S_{t}=j) \\
+
+ = & \sum_{m=1}^{M} P(S_{t+1}=m \mid S_{t}=j) \times P(Y_{t+1:T}\mid S_{t+1}=m,S_{t}=j) \\
+since\\
+= & \sum_{m=1}^{M} \frac{P(S_{t+1}=m,S_{t}=j)}{P(S_{t}=j)}\times \frac{P(Y_{t+1:T,S_{t+1}=m,S_{t}=j})}{P(S_{t+1}=m,S_{t}=j)}
+ \end{aligned}
+ \end{equation}
+
+
+## $\beta_{t}(j)=P(Y_{t+1},\ldots,Y_{T} \mid S_{t}=j)$
+
+\begin{equation}
+\begin{aligned}
+
+& \sum_{m=1}^{M} P(S_{t+1}=m \mid S_{t}=j)  P(Y_{t+1:T}\mid S_{t+1}=m,S_{t}=j) \\
+& note \\
+& P(Y_{((t+1):T)}\mid S_{t+1}=m,S_{t}=j) = \\
+
+& P(Y_{(t+1)}\mid S_{t+1}=m) P(Y_{t+2:T}\mid S_{t+1}=m) \\
+
+& \therefore \\
+
+& \sum_{m=1}^{M} P(S_{t+1}=m \mid S_{t} = j) P(Y_{t+1} \mid S_{t+1}=m) P(Y_{t+2:T} \mid S_{t+1}=m)
+
+ 
+\end{aligned}
+\end{equation}
+
+
+
+## $\beta_{t}(j)=P(y_{t+1},\ldots,y_{T} \mid S_{t}=j)$
+
+\begin{equation}
+\begin{aligned}
+& \sum_{m=1}^{M} P(S_{t+1}=m \mid S_{t} = j) P(Y_{t+1} \mid S_{t+1}=m) P(Y_{t+2:T} \mid S_{t+1}=m) \\
+
+& \sum_{m=1}^{M} (transition)(emission)(\beta_{t+1}(m))\\
+
+& \beta_{T}(j)=1
+
+\end{aligned}
+\end{equation}
+
+## Scripting $\beta_{i,t}(j)$
+
+- 3 objects and 3 indices.
+- i=$1,\ldots,N$, $t=1,\ldots,T$, $j=1,\ldots,M$
+- i=$1,\ldots,15$, $t=1,\ldots,20$, $j=1,\ldots,3$
+
+- set the 3 dimensional array $\beta$ and set for all individuals $\beta_{T}(j)=1$. dim(beta)= (15,20,3)
+- Gamma is transition probability matrix and is time homogeneous and is constant for i. dim(Gamma)=(3,3)  
+- B is the emission matrix and contains the densities of $y_{i,t} \mid S_{t}=m$ dim(B) = (15,20,3)
+
+## Scripting $\beta_{i,t}(j)$
+
+- beta[i, t, j] <-sum(Gamma[j, ]\*B[i, t+1, ]\*beta[i, t+1, ])
+
+- Gamma[j, ] = $P(S_{t+1}=1 \mid S_{t}=j),P(S_{t+1}=2 \mid S_{t}=j),P(S_{t+1}=3 \mid S_{t}=j )$
+
+- B[i, t+1, ] = $P(Y_{i,(t+1)} \mid S_{t+1}=1),P(Y_{i,(t+1)} \mid S_{t+1}=2),P(Y_{i,(t+1)} \mid  S_{t+1}=3)$
+
+- beta[i, t+1, ] = $P(Y_{i,t+2:T} \mid S_{t+1}=1),P(Y_{i,t+2:T} \mid S_{t+1}=2),P(Y_{i,t+2:T} \mid S_{t+1}=3)$
+
+\begin{equation}
+ \sum_{m=1}^{M} P(S_{t+1}=m \mid S_{t} = j) P(Y_{t+1} \mid S_{t+1}=m) P(Y_{t+2:T} \mid S_{t+1}=m)
+\end{equation}
+
+## Scripting $\beta_{t}(j)=P(y_{t+1},\ldots,y_{T} \mid S_{t}=j)$
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+beta <- array(dim = c(N, T, M))
+
+for (i in 1:N) {
+  beta[i, T, ] <- 1
+for (t in (T-1):1) {for (j in 1:M) {
+  beta[i, t, j] <-sum(Gamma[j, ] *B[i, t+1, ]*
+  beta[i, t+1, ])}}}
+```
+
+## $\gamma_{t}(j)=P(S_{t}=j \mid Y_{1:T})$
+
+- In the explanation below note the conditional independence property.
+
+- $Y_{t+1:T} \perp Y_{1:t} \mid S_{t}=j$, in other words if the state at time $t$ is known, the history of Y does not provide information for the future uncertainty of Y.  
+
+$P(Y_{t+1:T} \mid S_{t}=j)=P(Y_{t+1:T} \mid S_{t}=j, Y_{1:t})$
+
+## $\gamma_{t}(j)=P(S_{t}=j \mid Y_{1:T})$
+
+\begin{equation}
+\begin{aligned}
+
+\gamma_{t}(j) =& \frac{\alpha_{t}(j)\beta_{t}(j)}{\sum_{m=1}^{M}\alpha_{t}(m)\beta_{t}(m)}\\
+
+=& \frac{P(Y_{1},\ldots,Y_{t},S_{t}=j)P(y_{t+1},\ldots,Y_{T}|S_{t}=j)}{\sum_{m=1}^{M}\alpha_{t}(m)\beta_{t}(m)}\\
+
+=& \frac{P(Y_{1},\ldots,Y_{t},S_{t}=j)P(y_{t+1},\ldots,Y_{T}|S_{t}=j,y_{1},\ldots,Y_{t})}{\sum_{m=1}^{M}\alpha_{t}(m)\beta_{t}(m)}\\
+
+=& \frac{P(Y_{1},\ldots,Y_{T},S_{t}=j)}{\sum_{m=1}^{M}P(Y_{1},\ldots,Y_{T},S_{t}=m)}=\frac{P(Y_{1},\ldots,Y_{T},S_{t}=j)}{P(Y_{1},\ldots,Y_{T})}
+
+\end{aligned}
+\end{equation}
+
+## Scripting $\gamma_{t}(j)$
+
+- Note that the $\alpha$ below is $\alpha^{'}$ because of the normalization, this does not change anything in the relationship between $\alpha$ and $\beta$ for getting $\gamma$ since the numerator ratio and the denominator ratio is going to have the same constant.
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+gamma <- alpha * beta
+
+for (i in 1:N) {
+  for (t in 1:T) {
+    gamma[i,t,] <-
+      gamma[i,t,] / sum(gamma[i,t,])
+  }
+}
+
+gamma_state <- apply(gamma, c(1, 2), which.max)
+
+```
+
+## Converting gamma_state to long format
+
+- smoothed_state is the long format of gamma_state
+
+```{r}
+#| warning: false
+#| eval: true
+#| echo: true
+
+smoothed_state=array(dim=c(T*N))
+
+for(t in 1:T){
+  for(i in 1:N){
+    smoothed_state[t+(i-1)*T]=gamma_state[i,t]
+  }}
+
+sum(long$state==smoothed_state)/length(smoothed_state)
+```
+
+## Extra: $P(S_{t}=m \mid Y_{1:t-1})$
+
+\begin{equation}
+\begin{aligned}
+
+& P(S_{t}=m \mid S_{t-1}=j)=P(S_{t}=m \mid S_{t-1}=j,Y_{1:t-1})\\
+
+&P(S_{t}=m \mid Y_{1:t-1})= \sum_{j=1}^{M}P(S_{t-1}=j\mid Y_{1:t-1})P(S_{t}=m \mid S_{t-1}=j,Y_{1:t-1})\\
+
+& \sum_{j=1}^{M}\alpha^{'}_{t-1}(j)P(S_{t}=m \mid S_{t-1} = j)
+
+\end{aligned}
+\end{equation}
+
+## Replicating Results Using Software
